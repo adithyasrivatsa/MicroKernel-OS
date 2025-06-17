@@ -2,6 +2,7 @@
 #ifndef _MM_H
 #define _MM_H
 
+#include <stddef.h>
 #include <common.h>
 
 void kmalloc_init();

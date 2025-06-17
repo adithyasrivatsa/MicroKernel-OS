@@ -1,9 +1,6 @@
-```markdown
-# 🚀 MicroKernel‑OS
+# 🚀 MicroKernel-OS
 
-### A razor‑thin x86 microkernel prototype in C + Assembly that boots, multicasts tasks, and handles low-level hardware — all in under 1M lines by an 18-year-old badass.
-
----
+A lightweight x86 microkernel written in C and Assembly that demonstrates fundamental operating system concepts. This educational project implements core OS features like task scheduling, memory management, and inter-process communication.
 
 ## 🎯 What It Is
 
@@ -13,135 +10,190 @@ A **fully-functional microkernel** showcasing:
 - 🧱 Physical memory allocator with `kmalloc()`/`kfree()`  
 - 🛠 x86 Interrupt handling & modular hardware I/O  
 - 🔌 Bootloader loading -> protected mode transition  
-- ⚙️ Modular architecture ready to extend with drivers or FS  
+- ⚙️ Modular architecture ready to extend with drivers or FS
 
-Runs perfectly in **QEMU** via `Makefile` or `run.sh` — extendable to real hardware.
+## 🚀 Getting Started
 
----
+```bash
+# Clone the repository
+git clone https://github.com/ArchieTUX/MicroKernel-OS.git
+cd MicroKernel-OS
+
+# Install dependencies
+chmod +x setup.sh
+./setup.sh
+
+# Build and run
+./run.sh
+```
+
+## 🎯 Features
+
+Our microkernel implements these key operating system concepts:
+
+- 🌀 **Task Scheduling**: Preemptive round-robin scheduling via PIT interrupts
+- 💬 **IPC**: Inter-Process Communication with `send()`/`recv()` APIs
+- 🧱 **Memory Management**: Physical memory allocation via `kmalloc()`/`kfree()`
+- 🛠️ **Interrupt Handling**: x86 interrupt management and hardware I/O
+- 🔌 **Protected Mode**: Bootloader transition to 32-bit protected mode
+- ⚙️ **Modular Design**: Extensible architecture ready for drivers or filesystem
 
 ## 🧩 Project Structure Overview
 
 ```
-
 MicroKernel-OS/
 ├── bootloader/
 │   └── boot.asm         # Real-mode BIOS bootloader (loads at 0x7C00)
 │
 ├── kernel/
-│   ├── include/          # Public kernel headers
-│   │   ├── common.h      # Common macros, typedefs, and includes
-│   │   ├── task.h        # Task management and scheduling declarations
-│   │   ├── ipc.h         # Inter-process communication (IPC) interface
-│   │   ├── mm.h          # Memory management declarations
-│   │   └── interrupts.h  # Interrupt handling declarations
+│   ├── include/         # Public kernel headers
+│   │   ├── common.h     # Common macros and typedefs
+│   │   ├── task.h      # Task management declarations
+│   │   ├── ipc.h       # IPC interface
+│   │   ├── mm.h        # Memory management
+│   │   └── interrupts.h # Interrupt handling
 │   │
-│   ├── start.S           # Assembly entry point; sets up CPU in protected mode
-│   ├── main.c            # Kernel initialization + test harness
-│   ├── task.c            # Scheduler implementation (uses PIT interrupt)
-│   ├── ipc.c             # Message-passing primitives for inter-task communication
-│   └── mm.c              # Physical memory pool allocator
+│   ├── start.s         # Assembly entry point
+│   ├── main.c          # Kernel initialization
+│   ├── task.c          # Scheduler implementation
+│   ├── ipc.c          # Message-passing primitives
+│   └── mm.c           # Physical memory allocator
 │
-├── lib/                  # Helper/utility modules
-│   ├── string.c          # String manipulation functions (strcpy, strlen, etc.)
-│   └── util.c            # Utility functions: inb(), outb(), io_wait(), etc.
+├── lib/                # Helper utilities
+│   ├── string.c       # String operations
+│   └── util.c         # General utilities
 │
-├── Makefile              # Build system: compiles, links, and creates image
-├── link.ld               # Linker script for 32-bit flat binary
-├── run.sh                # Convenience script to launch OS in QEMU
-└── README.md             # Project overview and usage instructions
-
-````
-
----
-
-## ⚙️ Build & Launch — Step by Step
-
-**1️⃣ Prerequisites**
-
-Ensure you have:
-```bash
-sudo apt install build-essential nasm qemu-system-x86 gcc-multilib make
-````
-
-**2️⃣ Clone the Repo**
-
-```bash
-git clone https://github.com/ArchieTUX/MicroKernel-OS.git
-cd MicroKernel-OS
+├── setup.sh           # Dependency installation script
+├── link.ld           # Linker script for 32-bit kernel
+├── makefile          # Build configuration
+└── run.sh            # Build and run script
 ```
 
-**3️⃣ Build Everything**
+## 🔧 System Overview
+
+1. **Bootloader**
+   - BIOS loads `boot.asm` at 0x7C00
+   - Transitions to protected mode
+   - Loads and jumps to kernel
+
+2. **Kernel Entry**
+   - Sets up stack and registers
+   - Initializes core systems
+   - Launches initial tasks
+
+3. **Task Scheduler**
+   - Preemptive round-robin scheduling
+   - PIT timer-based task switching
+   - Context save/restore
+
+4. **Memory Management**
+   - Physical memory allocation
+   - Simple but effective heap management
+   - Memory pool allocation strategies
+
+5. **Inter-Process Communication**
+   - Message passing between tasks
+   - Synchronous send/receive operations
+   - Task coordination primitives
+
+## 📋 Prerequisites
+
+All prerequisites can be installed using the setup script:
 
 ```bash
-make
+./setup.sh
 ```
 
-**4️⃣ Run It**
+This installs:
+- gcc-multilib (32-bit support)
+- nasm (assembler)
+- qemu-system-x86 (emulator)
+- make (build system)
+- zip (for distribution)
 
-```bash
-make run
-# or:
-./run.sh
-```
+See [INSTALL.md](INSTALL.md) for manual installation instructions.
 
-Watch QEMU boot, register interrupts, spawn tasks, and execute!
+## 🛠️ Building and Running
 
-**5️⃣ Clean Build**
+1. Clean the build directory:
+   ```bash
+   make clean
+   ```
 
-```bash
-make clean
-```
+2. Build the kernel:
+   ```bash
+   make
+   ```
 
----
+3. Run in QEMU:
+   ```bash
+   ./run.sh
+   ```
 
 ## 🧪 What Happens Under the Hood
 
 1. **Bootloader**
+   - BIOS loads `boot.asm` at 0x7C00
+   - Reads kernel sector
+   - Jumps to protected mode
 
-   * BIOS → loads `boot.asm` @0x7C00 → reads kernel sector → jumps to protected mode
-
-2. **Kernel Entry (`start.S`)**
-
-   * Disables interrupts, sets up stack, switches to 32-bit, calls `main`
+2. **Kernel Entry (`start.s`)**
+   - Disables interrupts
+   - Sets up stack
+   - Switches to 32-bit mode
+   - Calls main
 
 3. **Kernel Init (`main.c`)**
-
-   * Init memory allocator
-   * Init IPC
-   * Register tasks A & B
-   * Enable PIT timer & interrupts
+   - Initializes memory allocator
+   - Initializes IPC
+   - Registers initial tasks
+   - Enables PIT timer & interrupts
 
 4. **Task Scheduler (`task.c`)**
-
-   * PIT triggers IRQ0
-   * Save current task context
-   * Round-robin next task
-   * Restore and resume
+   - PIT triggers IRQ0
+   - Saves current task context
+   - Round-robin task selection
+   - Restores and resumes next task
 
 5. **IPC (`ipc.c`)**
-
-   * Tasks can `send(pid, msg)` / `recv()` synchronously
+   - Implements message passing
+   - Provides send(pid, msg) / recv() APIs
+   - Handles task synchronization
 
 6. **Memory Manager (`mm.c`)**
+   - Manages physical memory
+   - Implements kmalloc()/kfree()
+   - Pool-based memory allocation
 
-   * Pool-based allocator: `kmalloc()`/`kfree()` for kernel heap
+## 🎭 Demo Tasks
 
----
+The kernel demonstrates multitasking with two test tasks:
 
-## 🎭 Demo: Task A / Task B
+- **Task A**: Prints "Task A" periodically
+- **Task B**: Prints "Task B" periodically
 
-Your kernel runs two test tasks:
+This shows:
+- Task creation and management
+- Context switching
+- Scheduler fairness
 
-* **Task A**: prints `"Task A"` every tick
-* **Task B**: prints `"Task B"` on alternate ticks
+## 🧪 Testing
 
-⚙️ This proves:
+The kernel runs two test tasks to demonstrate multitasking:
+- Task A: Prints "Task A" periodically
+- Task B: Prints "Task B" periodically
 
-* Task creation
-* Context-switching
-* Scheduler fairness
+This demonstrates:
+- Successful task creation
+- Context switching
+- Scheduler fairness
+- IPC functionality
 
----
+## 📘 Documentation
+
+- [INSTALL.md](INSTALL.md) - Detailed installation guide
+- Code comments explain implementation details
+- Header files document public interfaces
 
 ## 📈 Roadmap — What’s Next?
 
@@ -164,31 +216,28 @@ User-space processes
 System calls
 ❌ (Planned/Optional)
 
----
+## 🤝 Contributing
 
-## 🙌 Want to Contribute?
+Contributions are welcome! Areas for improvement:
+- Enhanced memory management
+- Additional device drivers
+- Filesystem support
+- Network stack
+- User-space process support
 
-1. **Fork** the repo
-2. `git checkout -b feature/my-awesome-ext`
-3. `git commit -am "Add new scheduler strategy"`
-4. `git push origin feature/my-awesome-ext`
-5. **Open a pull request**
+## 📝 License
 
-We hunger for better task management, IPC robustness, memory pooling, and nifty drivers.
-
----
-
-## 🧾 License
-
-MIT — Hack it, break it, remake it. Just keep the credits.
-
----
+See the [LICENSE](LICENSE) file for details.
 
 ## 🌟 Show Some Love
 
-Click the ⭐️ on the repo if this microkernel revs your engine!
+Click the ⭐️ on the repo if this microkernel revs your engine
 
----
+## ❓ Support
+
+- Check [INSTALL.md](INSTALL.md) for setup troubleshooting
+- Open an issue for bugs or questions
+- Submit pull requests for improvements
 
 ## 📞 Questions?
 

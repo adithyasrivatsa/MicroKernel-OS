@@ -13,5 +13,6 @@ typedef struct {
 
 void task_init();
 void schedule();
+void register_task(void (*task_func)());
 
 #endif

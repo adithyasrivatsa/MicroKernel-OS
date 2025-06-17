@@ -4,6 +4,9 @@
 
 #include <common.h>
 
+// Enable hardware interrupts
+void enable_interrupts();
+
 typedef struct {
     u32 ds;
     u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
