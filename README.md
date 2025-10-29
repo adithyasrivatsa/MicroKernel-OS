@@ -16,7 +16,7 @@ A **fully-functional microkernel** showcasing:
 
 ```bash
 # Clone the repository
-git clone https://github.com/herohero149/MicroKernel-OS.git
+git clone https://github.com/adithyasrivatsa/MicroKernel-OS.git
 cd MicroKernel-OS
 
 # Install dependencies
